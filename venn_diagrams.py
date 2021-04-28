@@ -11,84 +11,92 @@
 
 
 import os
+import argparse
 from matplotlib import pyplot as plt
 from matplotlib_venn import venn3
 from matplotlib_venn import venn3_circles
 
-hyb1 = "meme_posSelection_hyb1.csv"
-hyb2 = "meme_posSelection_hyb2.csv"
-parents = "meme_posSelection_Parents.csv"
+
+def draw_venn3(file1, file2, file3, n1, n2, n3, col1, col2, col3, title, a, outname):
+    f1 = []
+    with open(file1, 'r') as f:
+        header = f.readline()
+        for line in f:
+            gene = line.split(';')[0].split('_')[3]
+            f1.append(gene)
+
+    f2 = []
+    with open(file2, 'r') as f:
+        header = f.readline()
+        for line in f:
+            gene = line.split(';')[0].split('_')[3]
+            f2.append(gene)
+
+    f3 = []
+    with open(file3, 'r') as f:
+        header = f.readline()
+        for line in f:
+            gene = line.split(';')[0].split('_')[3]
+            f3.append(gene)
+
+    # for the positives
+
+    venn3([set(f1), set(f2), set(f3)], (n1, n2, n3), (col1, col2, col3), alpha = a)
+
+    if title:
+        plt.title(title, fontsize=20)
+
+    plt.draw()
+    plt.savefig('{}.{}'.format(outname, '.svg'), format='svg')
+    plt.savefig('{}.{}'.format(outname, '.pdf'), format='pdf')
+
+    #plt.show()
 
 
-poshyb1 = []
-with open(hyb1, 'r') as c:
-    header = c.readline()
-    for line in c:
-        gene = line.split(';')[0].split('_')[3]
-        poshyb1.append(gene)
+def main():
+    #############
 
-poshyb2 = []
-with open(hyb2, 'r') as f:
-    header = f.readline()
-    for line in f:
-        gene = line.split(';')[0].split('_')[3]
-        poshyb2.append(gene)
+        parser = argparse.ArgumentParser(description=
+                "Produces Venn diagrams for three samples in *.svg and *.pdf \
+                written into the home directory as File1. \
+                Please find names of availlable colours here:  \
+                https://matplotlib.org/stable/gallery/color/named_colors.html")
+        parser.add_argument('--File1', type=str, \
+                help="MEME summary file of first sample")
+        parser.add_argument('--File2', type=str, \
+                help="MEME summary file of second sample")
+        parser.add_argument('--File3', type=str, \
+                help="MEME summary file of third sample")
+        parser.add_argument('--Name1', type=str, \
+                help="Name/Title of first sample")
+        parser.add_argument('--Name2', type=str, \
+                help="Name/Title of second sample")
+        parser.add_argument('--Name3', type=str, \
+                help="Name/Title of third sample")
+        parser.add_argument('--color1', type=str, \
+                help="Color for circle corresponding to first sample. \
+                Default: darkslateblue", default='darkslateblue')
+        parser.add_argument('--color2', type=str, \
+                help="Color for circle corresponding to second sample. \
+                Default: seagreen", default='seagreen')
+        parser.add_argument('--color3', type=str, \
+                help="Color for circle corresponding to third sample. \
+                Default: hotpink", default='hotpink')
+        parser.add_argument('--Title', type=str, \
+                help="Title displayed above the diagram. Default: None", \
+                default=False)
+        parser.add_argument('--transparency', type=int, \
+                help="Transparency of circles in diagram. Default: 0.7", \
+                default= 0.7)
+        parser.add_argument('--outname', type=str, \
+                help="Names for outfiles")
+        args = parser.parse_args()
+    ###################
 
-posp = []
-with open(parents, 'r') as p:
-    header = p.readline()
-    for line in p:
-        gene = line.split(';')[0].split('_')[3]
-        posp.append(gene)
-
-# for the positives
-
-venn3([set(poshyb1), set(poshyb2), set(posp)], ('hyb1', 'hyb2', 'Parents'), ('tab:red', 'tab:olive', 'tab:cyan'), alpha = 0.7)
-
-plt.title('Positive selection detected', fontsize=20)
-
-plt.draw()
-plt.savefig("venn_positive.svg", format='svg')
-plt.savefig("venn_positive.pdf", format='pdf')
-
-plt.show()
-
-
-# for the negatives
-
-neghyb1 = "meme_noSelection_Hyb2.csv"
-neghyb2 = "meme_noSelection_Hyb1.csv"
-negparents = "meme_noSelection_Parents.csv"
-
-# read in negative files:
-
-
-neghyb1 = []
-with open(hyb1, 'r') as c:
-    header = c.readline()
-    for line in c:
-        gene = line.split(';')[0].split('_')[3]
-        neghyb1.append(gene)
-
-neghyb2 = []
-with open(hyb2, 'r') as f:
-    header = f.readline()
-    for line in f:
-        gene = line.split(';')[0].split('_')[3]
-        neghyb2.append(gene)
-
-negp = []
-with open(parents, 'r') as p:
-    header = p.readline()
-    for line in p:
-        gene = line.split(';')[0].split('_')[3]
-        negp.append(gene)
-
-venn3([set(neghyb1), set(neghyb2), set(negp)], ('hyb1', 'hyb2', 'Parents'), ('darkslateblue', 'seagreen', 'hotpink'), alpha = 0.7)
-
-plt.title('No selection detected', fontsize=20)
-plt.draw()
-plt.savefig("venn_negative.svg", format='svg')
-plt.savefig("venn_negative.pdf", format='pdf')
-
-plt.show()
+        basename = os.path.dirname(args.File1)
+        outfile = os.path.join(basename, args.outname)
+        draw_venn3(args.File1, args.File2, args.File3, args.Name1, args.Name2, \
+                    args.Name3, args.color1, args.color2, args.color3, \
+                    args.Title, args.transparency, outfile)
+if __name__ == '__main__':
+    main()

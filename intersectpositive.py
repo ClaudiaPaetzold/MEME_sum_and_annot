@@ -22,19 +22,23 @@ def main():
     parser.add_argument('-n', '--Names', type=str, \
             help="Tab-separated text file with one summary-filename (full Path) \
             and corresponding samplename per line. ")
-
-
+    parser.add_argument('-o', '--OutfilePrefix', help='Prefix for the output \
+            file. Default: No Prefix', default=False)
     args = parser.parse_args()
 ###################
     names={}
     with open(args.Names, 'r') as n:
         items = n.readlines()
-        s1f, s1name = items [0].strip().split('\t')
+        s1f, s1name = items[0].strip().split('\t')
         for i in items[1:]:
             filename, samplename = i.strip().split('\t')
             names[filename] = samplename
     # store name of outfile
-    outname = os.path.join(os.path.dirname(s1f), 'positiveintersect.csv')
+    if args.OutfilePrefix:
+        outname = os.path.join(os.path.dirname(s1f), args.OutfilePrefix + '_positiveintersect.csv')
+    else:
+        outname = os.path.join(os.path.dirname(s1f), 'positiveintersect.csv')
+    print('outfile = ', outname)
     # create initial dictionary from first file
     intdict, shead = create_dict(s1f)
     inthead = [shead[0]]+ ['{}_{}'.format(i, s1name) for i in shead[1:]]
@@ -42,7 +46,7 @@ def main():
     # loop through remaining files and add metrics for genes found in ...
     #... 1st and current
     for file in names.keys():
-        print(file)
+        #print(file)
         samplename = names[file]
         with open(file) as sample:
             new_header = ['{}_{}'.format(i, samplename) for i in sample.readline().strip().split(';')[1:]]

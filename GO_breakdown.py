@@ -19,19 +19,14 @@ def get_current_obo(directory):
 
 def go_iterparents(goid, categorydictionary, parsed_obo):
     # pass lowest level goterm to goatools parser (gt = parser)
-    #print(goid)
     gt = parsed_obo[goid]
-    #print(type(gt))
+
 
     while int(gt.level) > 1:
 
         for term in gt.parents:
-            # term itself is a parser!
-            #print(term)
             level = str(term.level)
             goterm = term.id
-            #print(goterm)
-            #print(level)
             if level in categorydictionary.keys():
                 if goterm in categorydictionary[level].keys():
                     categorydictionary[level][goterm] += 1
@@ -45,8 +40,7 @@ def go_iterparents(goid, categorydictionary, parsed_obo):
     return categorydictionary
 
 def build_dictionary(goterm, level, cat_dict, cat_tracker):
-        #print(cat_tracker)
-        #print()
+
         if level in cat_dict.keys():
             if goterm in cat_dict[level].keys():
                 cat_dict[level][goterm] + 1
@@ -59,8 +53,7 @@ def build_dictionary(goterm, level, cat_dict, cat_tracker):
         #check level - colect lowest
         if int(level) < cat_tracker[0]:
             cat_tracker = [int(level), goterm]
-        #print(cat_tracker)
-        #print()
+
         return(cat_tracker)
 
 def write_file(outname, cat_dict):
@@ -91,7 +84,7 @@ def main():
 
 
 #####################################
-    #print(args.oboFile)
+
     parent = os.path.dirname(args.annotatedFile)
     # download obo database for GO-terms
     if not args.oboFile:
