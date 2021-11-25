@@ -11,6 +11,12 @@ def create_dict(summaryfile):
             sdict[line.strip().split(';')[0]] = line.strip().split(';')[1:]
     return(sdict, shead)
 
+def read_exclude(controlfile):
+    clist = []
+    with open(controlfile, 'r') as c:
+        for line in c:
+            clist.append(line.split(';')[0])
+    return clist
 
 def main():
 #############
@@ -24,6 +30,13 @@ def main():
             and corresponding samplename per line. ")
     parser.add_argument('-o', '--OutfilePrefix', help='Prefix for the output \
             file. Default: No Prefix', default=False)
+    parser.add_argument('-f', '--FilterControl', dest='FilterControl', \
+            action='store_true', help='Flag. Enable if you want to \
+            exclude genes, that are also positively selected in a control group \
+            e.g. parental species, negative control etc.')
+    parser.set_defaults(FilterControl=False)
+    parser.add_argument('-c', '--Controlfile', type=str, help='Path to summary_meme_file \
+            serving as control')
     args = parser.parse_args()
 ###################
     names={}
@@ -75,6 +88,23 @@ def main():
         for gene in intdict.keys():
             linefmtstr = ('{};' *(len(intdict[gene])) ) + '{}\n'
             out.write(linefmtstr.format(gene, *intdict[gene]))
+
+    if args.FilterControl:
+        del_control = []
+        to_excl = read_exclude(args.Controlfile)
+        for i in to_excl:
+            if i in intdict.keys():
+                del intdict[i]
+        if args.OutfilePrefix:
+            outexclude = os.path.join(os.path.dirname(s1f), args.OutfilePrefix + '_positiveIntLessControl.csv')
+        else:
+            outexclude = os.path.join(os.path.dirname(s1f), 'positiveIntLessControl.csv')
+        with open(outexclude, 'w') as out:
+            fmtstr = ('{};' *(len(inthead)-1) ) + '{}\n'
+            out.write(fmtstr.format(*inthead))
+            for gene in intdict.keys():
+                linefmtstr = ('{};' *(len(intdict[gene])) ) + '{}\n'
+                out.write(linefmtstr.format(gene, *intdict[gene]))
 
 
 if __name__ == '__main__':
