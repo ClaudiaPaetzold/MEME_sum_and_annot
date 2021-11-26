@@ -116,19 +116,25 @@ def main():
                     # then try to get parents of the highest included term
                     # to that end get is level
                     goterm = goterms[i]
-                    go_id = go[goterms[i]]
-                    category = go_id.namespace
-                    level = str(go_id.level)
-                    if category == 'biological_process':
-                        #print('bp')
-                        # conditionals to add to specific dictionaries
-                        bp = build_dictionary(goterm, level, bp_dict, bp)
-                    elif category == 'molecular_function':
-                        #print('mf')
-                        mf = build_dictionary(goterm, level, mf_dict, mf)
-                    elif category == 'cellular_component':
-                        #print('cc')
-                        cc = build_dictionary(goterm, level, cc_dict, cc)
+                    try:
+                        go_id = go[goterms[i]]
+                        category = go_id.namespace
+                        level = str(go_id.level)
+                        if category == 'biological_process':
+                            #print('bp')
+                            # conditionals to add to specific dictionaries
+                            bp = build_dictionary(goterm, level, bp_dict, bp)
+                        elif category == 'molecular_function':
+                            #print('mf')
+                            mf = build_dictionary(goterm, level, mf_dict, mf)
+                        elif category == 'cellular_component':
+                            #print('cc')
+                            cc = build_dictionary(goterm, level, cc_dict, cc)
+                    except:
+                        # this is for a KeyError, when a GO-term was deprecated
+                        # between Uniprot download and the time of running
+                        # this script
+                        continue
 
                 if not bp[0] == 100:
                     go_iterparents(bp[1], bp_dict, go)
