@@ -228,6 +228,19 @@ optional arguments:
 
 ```
 
+##### GO_breakdown_add_function
+
+```python
+takes the go_breakdown output file as input and adds the decription to each
+go-term.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f INPUTFILE, --inputFile INPUTFILE
+                        Path to *biolproc/molfunc/celcomp.csv file
+  -o OBOFILE, --oboFile OBOFILE
+                        Path to go-basic.obo file. If not specified, the
+                        current version of the file will be downloaded
 
 ## Links
 

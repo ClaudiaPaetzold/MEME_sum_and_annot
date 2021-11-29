@@ -147,7 +147,7 @@ def main():
 
     write_file(os.path.join(parent, Path(args.annotatedFile).stem + '_biolproc.csv'), bp_dict)
     write_file(os.path.join(parent, Path(args.annotatedFile).stem + '_molfunc.csv'), mf_dict)
-    write_file(os.path.join(parent, Path(args.annotatedFile).stem + '_elcomp.csv'), cc_dict)
+    write_file(os.path.join(parent, Path(args.annotatedFile).stem + '_celcomp.csv'), cc_dict)
 
 if __name__ == '__main__':
     main()
