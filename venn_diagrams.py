@@ -11,6 +11,7 @@
 
 
 import os
+import re
 import argparse
 from matplotlib import pyplot as plt
 from matplotlib_venn import venn3
@@ -19,36 +20,49 @@ from matplotlib_venn import venn3_circles
 
 def draw_venn3(file1, file2, file3, n1, n2, n3, col1, col2, col3, title, a, outname):
     f1 = []
-    with open(file1, 'r') as f:
-        header = f.readline()
-        for line in f:
-            gene = line.split(';')[0].split('_')[3]
+    with open(file1, 'r') as fn1:
+        header = fn1.readline()
+        for l1 in fn1:
+            try:
+                gene = re.search(r'\d+', l1.split(';')[0]).group()
+            except IndexError:
+                gene = l1.split(';')[0]
             f1.append(gene)
+        
 
     f2 = []
-    with open(file2, 'r') as f:
-        header = f.readline()
-        for line in f:
-            gene = line.split(';')[0].split('_')[3]
+    with open(file2, 'r') as fn2:
+        header = fn2.readline()
+        for l2 in fn2:
+            try:
+                gene = re.search(r'\d+', l2.split(';')[0]).group()
+            except IndexError:
+                gene = l2.split(';')[0]
             f2.append(gene)
+        
 
     f3 = []
-    with open(file3, 'r') as f:
-        header = f.readline()
-        for line in f:
-            gene = line.split(';')[0].split('_')[3]
+    with open(file3, 'r') as fn3:
+        header = fn3.readline()
+        for l3 in fn3:
+            #print(l3)
+            try:
+                gene = re.search(r'\d+', l3.split(';')[0]).group()
+            except IndexError:
+                gene = l3.split(';')[0]
             f3.append(gene)
+        
 
     # for the positives
 
-    venn3([set(f1), set(f2), set(f3)], (n1, n2, n3), (col1, col2, col3), alpha = a)
+    venn3([set(sorted(f1)), set(sorted(f2)), set(sorted(f3))], (n1, n2, n3), (col1, col2, col3), alpha = a)
 
     if title:
         plt.title(title, fontsize=20)
 
     plt.draw()
-    plt.savefig('{}.{}'.format(outname, '.svg'), format='svg')
-    plt.savefig('{}.{}'.format(outname, '.pdf'), format='pdf')
+    plt.savefig('{}.{}'.format(outname, 'svg'), format='svg')
+    plt.savefig('{}.{}'.format(outname, 'pdf'), format='pdf')
 
     #plt.show()
 

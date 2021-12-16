@@ -12,7 +12,7 @@ def prep_table(xls):
     outfile = os.path.join(os.path.dirname(xls), os.path.basename(xls).split('.')[0] + '.csv')
     sample = pd.read_table(xls, sep='\t')
     sample_red = sample[["transcript_id", "sprot_Top_BLASTX_hit", "prot_coords", "sprot_Top_BLASTP_hit", "gene_ontology_BLASTX", "gene_ontology_BLASTP"]]
-    sample_red.to_csv(outfile, sep='|', index=True)
+    sample_red.to_csv(outfile, sep='!', index=True)
     return (outfile)
 
 
@@ -47,9 +47,9 @@ def annotate_positives(meme_summary, csv_annot, taxon):
                     with open(csv_annot, 'r') as anot:
                         header = anot.readline()
                         for line in anot:
-                            if gene + '|' in line:
+                            if gene + '!' in line:
                                 if taxon in line:
-                                    a = line.strip().split('|')
+                                    a = line.strip().split('!')
                                     # blastp = index 4 preferred, if not blastx, if neither to not annotated
                                     if a[4] == '.':
                                         symbol = a[2].split('^')[0]
@@ -68,7 +68,7 @@ def annotate_positives(meme_summary, csv_annot, taxon):
                                         break
                                 else:
 
-                                    c = line.strip().split('|')
+                                    c = line.strip().split('!')
                                     if c[4] == '.' and c[2] == '.':
                                         out.write('{};{};{}\n'.format(gene, 'NA', ';'.join(numbers)))
                                     else:
@@ -106,9 +106,9 @@ def annotate_negatives(meme_summary, csv_annot, taxon):
                     with open(csv_annot, 'r') as anot:
                         header = anot.readline()
                         for line in anot:
-                            if gene + '|' in line:
+                            if gene + '$' in line:
                                 if taxon in line:
-                                    a = line.strip().split('|')
+                                    a = line.strip().split('!')
                                     # blastp = index 4 preferred, if not blastx, if neither to not annotated
                                     if a[4] == '.':
                                         if a[2] == '.' :
@@ -132,7 +132,7 @@ def annotate_negatives(meme_summary, csv_annot, taxon):
                                             break
                                 else:
 
-                                    c = line.strip().split('|')
+                                    c = line.strip().split('!')
                                     if c[4] == '.' and c[2] == '.':
                                         out.write('{};{}\n'.format(gene, 'NA'))
                                     else:
